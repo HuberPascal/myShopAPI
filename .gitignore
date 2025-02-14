@@ -1,2 +1,40 @@
-bin/
+# Visual Studio-spezifische Dateien
+.vs/
+*.user
+*.suo
+*.vscode/
+*.sln.docstates
 
+# Build-Ausgabedateien
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.cache
+
+# Paket- und Abhängigkeitsverwaltung
+node_modules/
+packages/
+!packages/repositories.config
+
+# Logs & Debugging
+logs/
+*.log
+*.nlog
+*.tlog
+*.ide.log
+*.dotCover
+*.coverage
+*.testresults
+TestResults/
+coverage/
+*.csproj.user
+*.csproj.FileListAbsolute.txt
+
+# Konfigurationsdateien mit sensiblen Daten
+appsettings.json
+appsetting
+obj/Debug/net8.0/myShopAPI.AssemblyInfoInputs.cache
+obj/Debug/net8.0/myShopAPI.dll

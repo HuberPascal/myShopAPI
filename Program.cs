@@ -58,7 +58,8 @@ namespace myShopAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            if (app.Environment.IsDevelopment())
+                app.UseDeveloperExceptionPage(); // aktiviert detailliertere Fehler (nur für Debugging)
 
             app.MapControllers();
 

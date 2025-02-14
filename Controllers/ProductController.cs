@@ -19,13 +19,17 @@ namespace myShopAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProduct([FromBody] Product product)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Product> CreateProduct([FromBody] Product product)
         {
             _context.Products.Add(product);
 
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(CreateProduct), new { id = product.Id }, product ); // gibt die Antwort zurück (201 = created) und auch den link wo es gespeichert wurde, mit der ID (location: https://localhost:7137/api/Product?id=30)
+            return CreatedAtAction(nameof(CreateProduct), new { id = product.Id }, product); // gibt die Antwort zurück (201 = created) und auch den link wo es gespeichert wurde, mit der ID (location: https://localhost:7137/api/Product?id=30)
+           /* return Ok(product);*/ // gibt die Antwort zurück (201 = 
         }
 
         [HttpGet]
