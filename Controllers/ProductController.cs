@@ -53,22 +53,35 @@ namespace myShopAPI.Controllers
             return NoContent();
         }
 
-        [HttpPut]
-        public IActionResult UpdateProduct(int id, [FromBody] Product product)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Product>> UpdateProduct(int id, [FromBody] Product product)
         {
-            var productInDb = _context.Products.Find(id);
-
             if (product == null)
             {
-                return NotFound();
+                return BadRequest("Ungültige Produktdaten.");
             }
 
-            //productInDb.Name = product.Name;
-            //productInDb.Price = product.Price;
+            var productInDb = await _context.Products.FindAsync(id);
+            if (productInDb == null)
+            {
+                return NotFound($"Produkt mit ID {id} nicht gefunden.");
+            }
 
-            _context.SaveChanges();
+            // Produkt aktualisieren
+            productInDb.Category = product.Category;
+            productInDb.Brand = product.Brand;
+            productInDb.Name = product.Name;
+            productInDb.ProductPrice = product.ProductPrice;
+            productInDb.BasePrice = product.BasePrice;
+            productInDb.ProductSpecification = product.ProductSpecification;
+            productInDb.NumberOfRating = product.NumberOfRating;
+            productInDb.ImgSrc = product.ImgSrc;
+            productInDb.Rating = product.Rating;
 
-            return Ok();
+            await _context.SaveChangesAsync();
+
+            // WICHTIG: Gib das aktualisierte Produkt zurück!
+            return Ok(productInDb);
         }
     }
 }
