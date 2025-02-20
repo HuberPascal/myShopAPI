@@ -17,11 +17,13 @@ namespace myShopAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CartItem>()
-                .HasOne(ci => ci.Cart) // CartItem gehört zu einem Cart
-                .WithMany(c => c.Items) // Ein Cart kann viele CartItems haben
-                .HasForeignKey(ci => ci.CartId)
-                .OnDelete(DeleteBehavior.Cascade); // Warenkorb-Löschung löscht auch CartItems
+            modelBuilder.Entity<Cart>()
+               .HasMany(c => c.Items)
+               .WithOne()
+               .HasForeignKey(i => i.CartId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

@@ -5,7 +5,7 @@
 namespace myShopAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_Cart_And_CartItem : Migration
+    public partial class Add_Cart_and_CartItem : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

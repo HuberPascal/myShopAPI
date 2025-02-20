@@ -11,8 +11,8 @@ using myShopAPI.Data;
 namespace myShopAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250219152318_Add_Cart_And_CartItem")]
-    partial class Add_Cart_And_CartItem
+    [Migration("20250220135015_Update_CartItem")]
+    partial class Update_CartItem
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,7 @@ namespace myShopAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CartId")
+                    b.Property<int?>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -115,8 +115,7 @@ namespace myShopAPI.Migrations
                     b.HasOne("myShopAPI.Models.Cart", "Cart")
                         .WithMany("Items")
                         .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cart");
                 });

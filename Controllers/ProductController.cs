@@ -29,7 +29,7 @@ namespace myShopAPI.Controllers
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(CreateProduct), new { id = product.Id }, product); // gibt die Antwort zurück (201 = created) und auch den link wo es gespeichert wurde, mit der ID (location: https://localhost:7137/api/Product?id=30)
-           /* return Ok(product);*/ // gibt die Antwort zurück (201 = 
+           /* return Ok(product);*/ // gibt die Antwort zurück (201)
         }
 
         [HttpGet]
