@@ -74,7 +74,7 @@ public class AddCartItemData
 {
     public int ProductId { get; set; }
     public int? CartId { get; set; }
-    public int Amount { get; set;  }
+    public int Amount { get; set; }
 }
 
 public class CartItemDto

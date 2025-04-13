@@ -32,9 +32,11 @@ TestResults/
 coverage/
 *.csproj.user
 *.csproj.FileListAbsolute.txt
+*.dll
 
 # Konfigurationsdateien mit sensiblen Daten
 appsettings.json
 appsetting
 obj/Debug/net8.0/myShopAPI.AssemblyInfoInputs.cache
 obj/Debug/net8.0/myShopAPI.dll
+bin/Debug

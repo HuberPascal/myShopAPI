@@ -1,8 +1,10 @@
-
 using Microsoft.EntityFrameworkCore;
 using myShopAPI.Data;
-using NSwag.AspNetCore;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
+using myShopAPI.Models;
+using myShopAPI.Transport;
+using myShopAPI.Mappings;
 
 namespace myShopAPI
 {
@@ -12,40 +14,44 @@ namespace myShopAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            // CORS-Regeln hinzufÃ¼gen
+            builder.Services.AddCors(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); // ConnectionString
+                options.AddPolicy("AllowLocalhost", policy =>
+                    policy.WithOrigins("http://localhost:4200")  // Erlaube Anfragen von localhost:4200
+                          .AllowAnyMethod()    // Erlaube alle HTTP-Methoden (GET, POST, etc.)
+                          .AllowAnyHeader());  // Erlaube alle Header (einschlieÃŸlich Content-Type)
             });
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(); // Doppelt
+            // FÃ¼ge die DbContext- und Connection-String-Konfiguration hinzu
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
-            builder.Services.AddSwaggerGen(options => // Swagger (NSwag) hinzufügen
+            // AutoMapper manuell konfigurieren
+            var mapperConfig = new MapperConfiguration(cfg =>
+            {
+                // Hier alle Mapping-Profile hinzufÃ¼gen
+                cfg.AddProfile<CartMappingProfile>();
+            });
+
+            // Als Singleton im DI-Container registrieren
+            builder.Services.AddSingleton<IMapper>(sp => mapperConfig.CreateMapper());
+
+            // FÃ¼ge die Controller und Swagger-Dienste hinzu
+            builder.Services.AddControllers();
+            builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Mein API", Version = "v1" });
             });
 
-            // CORS-Regel hinzufügen (damit Angular API-Aufrufe machen kann)
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll",
-                    policy => policy.AllowAnyOrigin()
-                                    .AllowAnyMethod()
-                                    .AllowAnyHeader());
-            });
-
-
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Aktiviere Swagger und SwaggerUI im Entwicklungsmodus
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(); // Doppelt
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Meine API v1");
@@ -53,16 +59,16 @@ namespace myShopAPI
             }
 
             // WICHTIG: CORS aktivieren
-            app.UseCors("AllowAll");
+            app.UseCors("AllowLocalhost");  // Hier CORS aktivieren
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
+
+            // Developer Exception Page nur im Entwicklungsmodus
             if (app.Environment.IsDevelopment())
-                app.UseDeveloperExceptionPage(); // aktiviert detailliertere Fehler (nur für Debugging)
+                app.UseDeveloperExceptionPage();
 
             app.MapControllers();
-
             app.Run();
         }
     }
