@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using myShopAPI.Data;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using myShopAPI.Models;
 using myShopAPI.Transport;
 using myShopAPI.Mappings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace myShopAPI
 {
@@ -28,7 +30,11 @@ namespace myShopAPI
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            
             // AutoMapper manuell konfigurieren
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -55,18 +61,22 @@ namespace myShopAPI
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Meine API v1");
-                });
+                }); 
             }
 
             // WICHTIG: CORS aktivieren
             app.UseCors("AllowLocalhost");  // Hier CORS aktivieren
 
             app.UseHttpsRedirection();
-            app.UseAuthorization();
-
+            
             // Developer Exception Page nur im Entwicklungsmodus
             if (app.Environment.IsDevelopment())
                 app.UseDeveloperExceptionPage();
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+  
 
             app.MapControllers();
             app.Run();
