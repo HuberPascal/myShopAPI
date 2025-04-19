@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using myShopAPI.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace myShopAPI.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Cart> Carts { get; set; }
