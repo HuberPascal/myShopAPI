@@ -1,8 +1,11 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using myShopAPI.Models;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace myShopAPI.Controllers
 {
@@ -46,9 +49,35 @@ namespace myShopAPI.Controllers
 
             if (!result.Succeeded)
                 return Unauthorized("Login fehlgeschlagen");
+            
+            var token = GenerateJwtToken(user);
+            return Ok(new { token });
 
-            // TODO: JWT Token erstellen (kommt gleich)
-            return Ok(new { message = "Login erfolgreich (Token kommt noch)" });
+        }
+        
+        private string GenerateJwtToken(IdentityUser<Guid> user)
+        {
+            var jwtSettings = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build()
+                .GetSection("JwtSettings");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName!)
+                },
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpireMinutes"])),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 
