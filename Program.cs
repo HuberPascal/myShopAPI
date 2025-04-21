@@ -7,6 +7,8 @@ using myShopAPI.Models;
 using myShopAPI.Transport;
 using myShopAPI.Mappings;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace myShopAPI
 {
@@ -31,8 +33,8 @@ namespace myShopAPI
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            // builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                // .AddEntityFrameworkStores<ApplicationDbContext>();
 
             
             // AutoMapper manuell konfigurieren
@@ -41,6 +43,16 @@ namespace myShopAPI
                 // Hier alle Mapping-Profile hinzufügen
                 cfg.AddProfile<CartMappingProfile>();
             });
+            
+            builder.Services.AddIdentityCore<IdentityUser<Guid>>()
+                .AddRoles<IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddApiEndpoints();
+            
+            builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorizationBuilder();
 
             // Als Singleton im DI-Container registrieren
             builder.Services.AddSingleton<IMapper>(sp => mapperConfig.CreateMapper());
@@ -75,8 +87,6 @@ namespace myShopAPI
             
             app.UseAuthentication();
             app.UseAuthorization();
-
-  
 
             app.MapControllers();
             app.Run();
