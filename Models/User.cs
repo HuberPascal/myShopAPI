@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 namespace myShopAPI.Models;
 
 
-public class SystemUser : IdentityUser
+public class SystemUser : IdentityUser<Guid>
 {
     public string Gender {get; set;}
     public DateTime BirthDate { get; set; }

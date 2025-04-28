@@ -28,7 +28,8 @@ namespace myShopAPI.Controllers
             var user = new IdentityUser<Guid>
             {
                 UserName = dto.Username,
-                Email = dto.Email
+                Email = dto.Email,
+                PasswordHash = dto.Password
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
